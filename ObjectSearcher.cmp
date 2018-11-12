@@ -1,0 +1,76 @@
+<aura:component controller="ObjectSearchController2">
+    <aura:attribute name="searchValues" type="sObject[]"/>
+    <aura:attribute name="searchTerm" type="String"/>
+    <aura:attribute name="noResults" type="Boolean" default="false"/>
+    <aura:attribute name="objectType" type="String"/>
+    <aura:attribute name="objectIconStr" type="String"/>
+    <aura:attribute name="sObjectFields" type="String[]"/>
+    <aura:attribute name="selectedObjectId" type="String" default=""/>
+    <aura:attribute name="disabled" type="Boolean" default="false"/>
+
+
+    <div class="slds-col">
+        <div class="slds-size_1-of-1 slds-dropdown-trigger slds-dropdown-trigger_click" aura:id="objSearchDropdown" aria-expanded="false" aria-haspopup="listbox" role="combobox">
+            <div class="slds-combobox__form-element" role="none">
+                <div onkeyup="{!c.enterSearch}">
+                    <lightning:input aura:id="searchInputId"
+                                     name="enter-search"
+                                     label="{!v.objectType}"
+                                     type="search"
+                                     value="{!v.searchTerm}"
+                                     placeholder="Enter Search Here"
+                                     onblur="{!c.hideDropdownTimer}"
+                                     />
+                </div>
+            </div>
+            <div id="listbox-unique-id" role="listbox">
+                <ul class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid" role="presentation">
+                    <aura:if isTrue="{!v.noResults}">
+                        <li role="presentation" class="slds-listbox__item">
+                            <div id="listbox-option-unique-id-01" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                <span class="slds-icon_container" title="{!'No ' + v.objectType + ' Found'}">
+                                    <lightning:icon iconName="utility:error" size="x-small"/>
+                                    <span class="slds-assistive-text">No {!v.objectType} Found</span>
+                                </span>
+                                <a role="option" aria-checked="true">
+                                    <span class="slds-media__body">
+                                        <option class="slds-m-top_xxx-small" text="{!'No ' + v.objectType + ' Found'}"></option>
+                                    </span>
+                                </a>
+                            </div>
+                        </li>
+                    </aura:if>
+                    <aura:iteration items="{!v.searchValues}" var="sObjectVal">
+                        <aura:if isTrue="{!sObjectVal.CaseNumber != null}">
+                            <li role="presentation" class="slds-listbox__item">
+                                <div style="padding-left:16px; padding-top:10px; padding-bottom:10px;" id="listbox-option-unique-id-01" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+
+                                        <span class="slds-icon_container" title="{!v.objectType + Icon}" >
+                                            <lightning:icon iconName="{!v.objectIconStr}" size="small"/>
+                                            <span class="slds-assistive-text">{!v.objectType} Icon</span>
+                                        </span>
+                                    <span class="slds-media__body">
+                                        <a href="javascript:void(0);" role="option" aria-checked="true" onclick="{!c.displayObj}" >
+                                            <option style="padding:2px; padding-left:10px;" value="{!sObjectVal.Id + '/' + sObjectVal.CaseNumber}" text="{!sObjectVal.CaseNumber}"></option>
+                                        </a>
+                                    </span>
+                                </div>
+                            </li>
+                        </aura:if>
+                    </aura:iteration>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <aura:if isTrue="{!v.selectedObjectId}">
+        <div class="slds-m-top_medium">
+            <lightning:recordForm
+                                      onsubmit="{!c.handleSubmit}"
+                                      recordId="{!selectedObjectId}"
+                                      objectApiName="{!v.objectType}"
+                                      layout="full">
+            </lightning:recordForm>
+        </div>
+    </aura:if>
+
+</aura:component>
